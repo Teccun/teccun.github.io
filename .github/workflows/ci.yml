@@ -23,6 +23,10 @@ jobs:
             ruby-version: '3.4.5'
             bundler-cache: true
 
+        - name: Prepare bundler for Linux
+          run: |
+            bundle lock --add-platform x86_64-linux    
+
         - name: Install dependencies
           run: |
            sudo apt-get update
