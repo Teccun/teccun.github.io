@@ -1,0 +1,49 @@
+name: CI and Deploy Jekyll Site
+
+on:
+    push:
+        branches:
+            - main
+    workflow_dispatch:
+
+jobs:
+    build-deploy:
+        
+        runs-on: ubuntu-latest
+
+        steps:
+        - name: Checkout repository
+          uses: actions/checkout@v4
+          with:
+            fetch-depth: 0
+        
+        - name: Setup Ruby
+          uses: ruby/setup-ruby@v1
+          with:
+            ruby-version: '3.x'
+            bundler-cache: true
+
+        - name: Install dependencies
+          run: |
+           sudo apt-get update
+           sudo apt-get install -y imagemagick
+           bundle install
+
+        - name: Convert PDF to PNG
+          run: |
+           mkdir -p assets/images
+           # конвертирует первую страницу PDF
+           convert -density 300 resume.pdf[0] -quality 90 assets/images/resume.png
+
+        - name: Build site with Jekyll
+          run: bundle exec jekyll build --destination _site
+
+        - name: Deploy to GitHub Pages
+          uses: peaceiris/actions-gh-pages@v4
+          with:
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+            publish_dir: _site
+            # optional: specify user.name and user.email for the commit
+            commit_message: "ci: build and deploy site"
+
+        
