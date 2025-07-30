@@ -25,12 +25,14 @@ jobs:
 
         - name: Prepare bundler for Linux
           run: |
+            gem install bundler
             bundle lock --add-platform x86_64-linux    
 
         - name: Install dependencies
           run: |
            sudo apt-get update
            sudo apt-get install -y imagemagick
+           bundle config set --local path vendor/bundle
            bundle install
 
         - name: Convert PDF to PNG
