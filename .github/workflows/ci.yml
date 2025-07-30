@@ -39,7 +39,7 @@ jobs:
           run: |
            mkdir -p assets/images
            # конвертирует первую страницу PDF
-           convert -density 300 resume.pdf[0] -quality 90 assets/images/resume.png
+           convert -density 300 assets/files/resume.pdf[0] -quality 90 assets/images/resume.png
 
         - name: Build site with Jekyll
           run: bundle exec jekyll build --destination _site
