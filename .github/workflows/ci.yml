@@ -1,57 +1,45 @@
 name: CI and Deploy Jekyll Site
+
 permissions:
-  contents: write  
+  contents: read
+  pages: write
+  id-token: write  
 
 on:
-    push:
-        branches:
-            - main
-    workflow_dispatch:
+  push:
+    branches: ["main"]
+
+  workflow_dispatch:
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
 
 jobs:
-    build-deploy:
-        
-        runs-on: ubuntu-latest
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Pagse
+        uses: actions/configure-pages@v5
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
 
-        steps:
-        - name: Checkout repository
-          uses: actions/checkout@v4
-          with:
-            fetch-depth: 0
-        
-        - name: Setup Ruby
-          uses: ruby/setup-ruby@v1
-          with:
-            ruby-version: '3.4.5'
-            bundler-cache: true
-
-        - name: Prepare bundler for Linux
-          run: |
-            gem install bundler
-            bundle lock --add-platform x86_64-linux    
-
-        - name: Install dependencies
-          run: |
-           sudo apt-get update
-           sudo apt-get install -y imagemagick
-           bundle config set --local path vendor/bundle
-           bundle install
-
-        - name: Convert PDF to PNG
-          run: |
-           mkdir -p assets/images
-           # конвертирует первую страницу PDF
-           convert -density 300 assets/files/resume.pdf[0] -quality 90 assets/images/resume.png
-
-        - name: Build site with Jekyll
-          run: bundle exec jekyll build --destination _site
-
-        - name: Deploy to GitHub Pages
-          uses: peaceiris/actions-gh-pages@v4
-          with:
-            github_token: ${{ secrets.GITHUB_TOKEN }}
-            publish_dir: _site
-            # optional: specify user.name and user.email for the commit
-            commit_message: "ci: build and deploy site"
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to Github Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
 
         
