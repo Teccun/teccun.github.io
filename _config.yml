@@ -18,13 +18,12 @@
 # You can create any custom variable you would like, and they will be accessible
 # in the templates via {{ site.myvariable }}.
 
-title: My own blog
+title: Мой блог-сайт
 email: filpereverzev@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Мой блог, повествующий обо мне и прочем
+  блог, сайт, блог-сайт, Филипп Переверзев
 baseurl: "" # the subpath of your site, e.g. /blog
-url: "" # the base hostname & protocol for your site, e.g. http://example.com
-twitter_username: 
+url: "https://teccun.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  Teccun
 
 # Build settings
@@ -32,6 +31,7 @@ theme: minima
 plugins:
   - jekyll-feed
   - jekyll-seo-tag
+  - jekyll-sitemap
 
 header_pages:
   - index.md
